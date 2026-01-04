@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import connectDB from '@/lib/db';
 import { Todo } from '@/lib/models';
 import { authOptions } from '@/lib/auth';
+import { encrypt, decrypt } from '@/lib/encryption';
 
 // GET all todos for authenticated user
 export async function GET() {
@@ -16,11 +17,12 @@ export async function GET() {
     await connectDB();
     const todos = await Todo.find({ user: session.user.id }).sort({ createdAt: -1 });
     
-    // Ensure all items have targetDate and status fields with defaults
+    // Ensure all items have targetDate and status fields with defaults, and decrypt values
     const processedTodos = todos.map((todo: any) => ({
       ...todo.toObject(),
       items: todo.items.map((item: any) => ({
         ...item.toObject(),
+        value: decrypt(item.value || ''),
         targetDate: item.targetDate || undefined,
         status: item.status || 'ETS'
       }))
@@ -44,6 +46,14 @@ export async function POST(request: NextRequest) {
     await connectDB();
     const data = await request.json();
     
+    // Encrypt item values if they exist
+    if (data.items) {
+      data.items = data.items.map((item: any) => ({
+        ...item,
+        value: encrypt(item.value || '')
+      }));
+    }
+    
     // Add user ID to the todo
     const todoData = {
       ...data,
@@ -51,7 +61,17 @@ export async function POST(request: NextRequest) {
     };
     
     const todo = await Todo.create(todoData);
-    return NextResponse.json(todo);
+    
+    // Decrypt before returning
+    const responseTodo = {
+      ...todo.toObject(),
+      items: todo.items.map((item: any) => ({
+        ...item.toObject(),
+        value: decrypt(item.value || '')
+      }))
+    };
+
+    return NextResponse.json(responseTodo);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create todo' }, { status: 500 });
   }

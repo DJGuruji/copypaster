@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { XMarkIcon, ExclamationTriangleIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, ExclamationTriangleIcon, PencilIcon, TrashIcon, PlusIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { Fragment } from 'react';
 
 interface Item {
@@ -104,101 +104,108 @@ export default function SidePanel({
     }
   };
 
-  // Filter todos based on search query
   const filteredTodos = todos.filter(todo =>
     todo.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const panel = (
-    <div className="flex h-full flex-col bg-black backdrop-blur-sm shadow-lg">
-      <div className="flex items-center justify-between p-4 border-b border-gray-300 bg-gradient-to-r from-blue-800 to-indigo-900 text-white">
-        <h2 className="text-lg  text-white font-bold text-md">Projects</h2>
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="px-4 py-2 bg-black text-white font-bold text-xl rounded-md hover:bg-slate-900 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-          data-aos="zoom-in"
-          data-aos-delay="300"
-        >
-          Create Project
-        </button>
-      </div>
-      <div className="flex-1 overflow-y-auto">
-        {/* Search Input */}
-        <div className="p-4 border-b border-slate-700">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search Project..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 bg-slate-900 border border-gray-300 rounded-md text-slate-200 placeholder-slate-400 focus:border-yellow-400 focus:ring-yellow-400 transition-all duration-300"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors duration-300"
-              >
-                <XMarkIcon className="h-4 w-4" />
-              </button>
-            )}
-          </div>
+    <div className="flex h-full flex-col bg-[#09090b] border-r border-[#27272a]">
+      <div className="p-6 border-b border-[#27272a]">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold tracking-tighter">
+            <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">
+              Projects
+            </span>
+          </h2>
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-yellow-400 to-amber-500 p-2 text-[#09090b] hover:opacity-90 transition-all shadow-[0_0_15px_rgba(251,191,36,0.2)] hover:scale-110 active:scale-95"
+            title="Create Project"
+          >
+            <PlusIcon className="h-5 w-5" />
+          </button>
         </div>
         
+        <div className="relative group">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#a1a1aa] group-focus-within:text-yellow-500 transition-colors" />
+          <input
+            type="text"
+            placeholder="Search projects..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 bg-[#18181b]/30 border border-[#27272a] rounded-xl text-sm text-[#fafafa] placeholder:text-[#52525b] focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a1a1aa] hover:text-[#fafafa] transition-colors"
+            >
+              <XMarkIcon className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-3">
         {isLoading ? (
-          <div className="flex justify-center items-center h-32">
-            <div className="animate-pulse text-yellow-400">Loading Projects...</div>
+          <div className="flex flex-col items-center justify-center h-40 space-y-4">
+            <div className="relative">
+              <div className="w-8 h-8 border-2 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin" />
+              <div className="absolute inset-0 w-8 h-8 border-2 border-transparent border-b-amber-300 rounded-full animate-spin-slow" />
+            </div>
+            <p className="text-xs font-medium text-[#a1a1aa] tracking-widest uppercase">Loading...</p>
           </div>
         ) : (
-          <ul className="divide-y divide-slate-700">
-            {filteredTodos.map((todo, index) => (
-              <li 
+          <div className="space-y-1.5">
+            {filteredTodos.map((todo) => (
+              <div 
                 key={todo._id} 
-                className="hover:bg-slate-900 transition-all duration-300"
-                
+                className="group relative flex items-center rounded-xl hover:bg-[#18181b] border border-transparent hover:border-[#27272a] transition-all px-4 py-3 cursor-pointer"
+                onClick={() => onTodoClick(todo)}
               >
-                <div className="flex items-center justify-between p-4">
-                  <div className="flex-1 min-w-0">
-                    <button
-                      onClick={() => onTodoClick(todo)}
-                      className="text-sm font-medium text-slate-200 hover:text-yellow-400 transition-colors duration-300 text-left w-full"
-                    >
-                      {todo.title}
-                    </button>
-                    <div className="flex items-center space-x-4 mt-1 text-xs text-slate-400">
-                      <span>Created: {new Date(todo.createdAt).toLocaleDateString()}</span>
-                      {todo.targetDate && (
-                        <span className={`${new Date(todo.targetDate) < new Date() ? 'text-red-400' : 'text-green-400'}`}>
-                          Target: {new Date(todo.targetDate).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2 ml-4">
-                    <button
-                      onClick={() => handleEditClick(todo)}
-                      className="text-yellow-400 hover:text-yellow-300 transition-colors duration-300 p-1.5 rounded-full hover:bg-slate-900"
-                    >
-                      <PencilIcon className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(todo._id)}
-                      className="text-red-400 hover:text-red-300 transition-colors duration-300 p-1.5 rounded-full hover:bg-slate-900"
-                    >
-                      <TrashIcon className="h-4 w-4" />
-                    </button>
-                  </div>
+                <div className="flex-1 min-w-0 mr-2">
+                  <h3 className="text-sm font-semibold text-[#fafafa] group-hover:text-yellow-400 transition-colors truncate">
+                    {todo.title}
+                  </h3>
+                  <p className="text-[10px] font-medium text-[#a1a1aa] mt-0.5 uppercase tracking-wider">
+                    {new Date(todo.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
-              </li>
-            ))}
-            {filteredTodos.length === 0 && !isLoading && (
-              <li 
-                className="p-8 text-center text-slate-400"
                 
-              >
-                {searchQuery ? 'No projects found matching your search.' : 'No Projects yet. Create one to get started.'}
-              </li>
+                <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditClick(todo);
+                    }}
+                    className="p-1.5 text-[#a1a1aa] hover:text-blue-400 hover:bg-blue-400/10 rounded-md transition-all"
+                  >
+                    <PencilIcon className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(todo._id);
+                    }}
+                    className="p-1.5 text-[#a1a1aa] hover:text-red-500 hover:bg-red-500/10 rounded-md transition-all"
+                  >
+                    <TrashIcon className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+            
+            {filteredTodos.length === 0 && !isLoading && (
+              <div className="px-4 py-12 text-center">
+                <div className="inline-flex p-3 rounded-full bg-[#18181b] border border-[#27272a] mb-3">
+                  <MagnifyingGlassIcon className="h-5 w-5 text-[#52525b]" />
+                </div>
+                <p className="text-sm font-medium text-[#a1a1aa]">
+                  {searchQuery ? 'No results found.' : 'No projects yet.'}
+                </p>
+              </div>
             )}
-          </ul>
+          </div>
         )}
       </div>
     </div>
@@ -208,34 +215,47 @@ export default function SidePanel({
     return (
       <>
         <Transition.Root show={isOpen} as={Fragment}>
-          <Dialog as="div" className="relative z-10" onClose={setIsOpen}>
-            <div className="fixed inset-0 bg-black bg-opacity-75 transition-opacity backdrop-blur-sm" />
+          <Dialog as="div" className="relative z-50" onClose={setIsOpen}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-in-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in-out duration-300"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" />
+            </Transition.Child>
+
             <div className="fixed inset-0 overflow-hidden">
               <div className="absolute inset-0 overflow-hidden">
                 <div className="pointer-events-none fixed inset-y-0 left-0 flex max-w-full">
                   <Transition.Child
                     as={Fragment}
-                    enter="transform transition ease-in-out duration-500"
+                    enter="transform transition ease-in-out duration-300"
                     enterFrom="-translate-x-full"
                     enterTo="translate-x-0"
-                    leave="transform transition ease-in-out duration-500"
+                    leave="transform transition ease-in-out duration-300"
                     leaveFrom="translate-x-0"
                     leaveTo="-translate-x-full"
                   >
-                    <Dialog.Panel className="pointer-events-auto w-80">
-                      <div className="flex h-full flex-col bg-slate-900 shadow-xl">
-                        <div className="flex items-center justify-between p-4 border-b border-gray-300 bg-gradient-to-r from-blue-800 to-indigo-900 text-white">
-                          <Dialog.Title className="text-lg font-medium text-yellow-400">
-                            Todos
+                    <Dialog.Panel className="pointer-events-auto w-screen max-w-xs">
+                      <div className="flex h-full flex-col bg-[#09090b]">
+                        <div className="flex items-center justify-between p-4 border-b border-[#27272a]">
+                          <Dialog.Title className="text-sm font-semibold text-[#fafafa] uppercase tracking-wider">
+                            Menu
                           </Dialog.Title>
                           <button 
                             onClick={() => setIsOpen(false)}
-                            className="text-yellow-400 hover:text-yellow-300 transition-colors duration-300"
+                            className="p-2 text-[#a1a1aa] hover:text-[#fafafa] transition-colors"
                           >
-                            <XMarkIcon className="h-6 w-6" />
+                            <XMarkIcon className="h-5 w-5" />
                           </button>
                         </div>
-                        {panel}
+                        <div className="flex-1 overflow-y-auto">
+                          {panel}
+                        </div>
                       </div>
                     </Dialog.Panel>
                   </Transition.Child>
@@ -245,7 +265,6 @@ export default function SidePanel({
           </Dialog>
         </Transition.Root>
 
-        {/* Create Todo Modal */}
         <CreateTodoModal 
           isOpen={isCreateModalOpen}
           setIsOpen={setIsCreateModalOpen}
@@ -256,7 +275,6 @@ export default function SidePanel({
           onSubmit={handleCreateSubmit}
         />
 
-        {/* Edit Todo Modal */}
         <EditTodoModal
           isOpen={isEditModalOpen}
           setIsOpen={setIsEditModalOpen}
@@ -267,7 +285,6 @@ export default function SidePanel({
           onSubmit={handleEditSubmit}
         />
 
-        {/* Delete Confirmation Modal */}
         <DeleteConfirmationModal
           isOpen={isDeleteModalOpen}
           setIsOpen={setIsDeleteModalOpen}
@@ -279,9 +296,8 @@ export default function SidePanel({
 
   return (
     <>
-      <div className="w-80 border-r border-slate-700 h-full shadow-lg">{panel}</div>
+      <div className="w-80 h-full flex flex-col">{panel}</div>
       
-      {/* Create Todo Modal */}
       <CreateTodoModal 
         isOpen={isCreateModalOpen}
         setIsOpen={setIsCreateModalOpen}
@@ -292,7 +308,6 @@ export default function SidePanel({
         onSubmit={handleCreateSubmit}
       />
 
-      {/* Edit Todo Modal */}
       <EditTodoModal
         isOpen={isEditModalOpen}
         setIsOpen={setIsEditModalOpen}
@@ -303,7 +318,6 @@ export default function SidePanel({
         onSubmit={handleEditSubmit}
       />
 
-      {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
         isOpen={isDeleteModalOpen}
         setIsOpen={setIsDeleteModalOpen}
@@ -313,14 +327,11 @@ export default function SidePanel({
   );
 }
 
-// Create Todo Modal Component
 function CreateTodoModal({
   isOpen,
   setIsOpen,
   title,
   setTitle,
-  targetDate,
-  setTargetDate,
   onSubmit
 }: {
   isOpen: boolean;
@@ -333,7 +344,7 @@ function CreateTodoModal({
 }) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-20" onClose={() => setIsOpen(false)}>
+      <Dialog as="div" className="relative z-[60]" onClose={() => setIsOpen(false)}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -343,11 +354,11 @@ function CreateTodoModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
+          <div className="flex min-h-full items-center justify-center p-4">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -357,52 +368,42 @@ function CreateTodoModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-black p-6 text-left align-middle shadow-xl transition-all border border-slate-700">
-                <Dialog.Title
-                  as="h3"
-                  className="text-lg leading-6 font-bold text-yellow-400"
-                >
-                  Create New Project
-                </Dialog.Title>
-                <form onSubmit={onSubmit}>
-                  <div className="mt-4">
-                    <label htmlFor="todoTitle" className="block text-sm font-medium text-slate-300">
-                       Title
+              <Dialog.Panel className="w-full max-w-md bg-[#09090b] rounded-xl p-8 border border-[#27272a] shadow-2xl">
+                <div className="mb-6">
+                  <Dialog.Title as="h3" className="text-2xl font-semibold tracking-tight text-[#fafafa]">
+                    Create New Project
+                  </Dialog.Title>
+                  <p className="text-sm text-[#a1a1aa] mt-1">Organize your items into projects</p>
+                </div>
+                
+                <form onSubmit={onSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="todoTitle" className="text-sm font-medium leading-none text-[#fafafa]">
+                       Project Name
                     </label>
                     <input
                       type="text"
                       id="todoTitle"
-                      className="mt-1 p-2 block w-full rounded-md border-gray-300 bg-black shadow-sm focus:border-yellow-400 focus:ring-yellow-400 text-slate-200"
-                      placeholder="Enter Project title"
+                      className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#fafafa]"
+                      placeholder="e.g. Work Assets, Personal Clips"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       autoFocus
+                      required
                     />
                   </div>
-                  {/* <div className="mt-4">
-                    <label htmlFor="todoTargetDate" className="block text-sm font-medium text-slate-300">
-                      Target Date (Optional)
-                    </label>
-                    <input
-                      type="date"
-                      id="todoTargetDate"
-                      className="mt-1 p-2 block w-full rounded-md border-slate-600 bg-slate-700 shadow-sm focus:border-yellow-400 focus:ring-yellow-400 text-slate-200"
-                      value={targetDate}
-                      onChange={(e) => setTargetDate(e.target.value)}
-                    />
-                  </div> */}
 
-                  <div className="mt-6 flex justify-end space-x-3">
+                  <div className="flex justify-end space-x-3 pt-6">
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md border border-gray-300 bg-black px-4 py-2 text-sm font-medium text-slate-300 shadow-sm hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-slate-900"
+                      className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-[#27272a] bg-transparent hover:bg-[#27272a] h-10 px-4 py-2"
                       onClick={() => setIsOpen(false)}
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-700 px-4 py-2 text-sm font-medium text-yellow-400 shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-slate-900"
+                      className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-[#fafafa] text-[#09090b] hover:bg-[#fafafa]/90 h-10 px-4 py-2"
                     >
                       Create
                     </button>
@@ -417,14 +418,11 @@ function CreateTodoModal({
   );
 }
 
-// Edit Todo Modal Component
 function EditTodoModal({
   isOpen,
   setIsOpen,
   title,
   setTitle,
-  targetDate,
-  setTargetDate,
   onSubmit
 }: {
   isOpen: boolean;
@@ -437,7 +435,7 @@ function EditTodoModal({
 }) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-20" onClose={() => setIsOpen(false)}>
+      <Dialog as="div" className="relative z-[60]" onClose={() => setIsOpen(false)}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -447,7 +445,7 @@ function EditTodoModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
@@ -461,52 +459,42 @@ function EditTodoModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-black p-6 text-left align-middle shadow-xl transition-all border border-gray-300">
-                <Dialog.Title
-                  as="h3"
-                  className="text-lg leading-6 font-bold text-yellow-400"
-                >
-                  Edit Todo
-                </Dialog.Title>
-                <form onSubmit={onSubmit}>
-                  <div className="mt-4">
-                    <label htmlFor="editTodoTitle" className="block text-sm font-medium text-slate-300">
-                      Todo Title
+              <Dialog.Panel className="w-full max-w-md bg-[#09090b] rounded-xl p-8 border border-[#27272a] shadow-2xl text-left">
+                <div className="mb-6">
+                  <Dialog.Title as="h3" className="text-2xl font-semibold tracking-tight text-[#fafafa]">
+                    Edit Project
+                  </Dialog.Title>
+                  <p className="text-sm text-[#a1a1aa] mt-1">Make changes to your project details</p>
+                </div>
+                
+                <form onSubmit={onSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="editTodoTitle" className="text-sm font-medium leading-none text-[#fafafa]">
+                      Project Name
                     </label>
                     <input
                       type="text"
                       id="editTodoTitle"
-                      className="mt-1 p-2 block w-full rounded-md border-gray-300 bg-black shadow-sm focus:border-yellow-400 focus:ring-yellow-400 text-slate-200"
-                      placeholder="Enter todo title"
+                      className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#fafafa]"
+                      placeholder="Enter project name"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       autoFocus
+                      required
                     />
                   </div>
-                  {/* <div className="mt-4">
-                    <label htmlFor="editTodoTargetDate" className="block text-sm font-medium text-slate-300">
-                      Target Date (Optional)
-                    </label>
-                    <input
-                      type="date"
-                      id="editTodoTargetDate"
-                      className="mt-1 block w-full p-2 rounded-md border-slate-600 bg-slate-700 shadow-sm focus:border-yellow-400 focus:ring-yellow-400 text-slate-200"
-                      value={targetDate}
-                      onChange={(e) => setTargetDate(e.target.value)}
-                    />
-                  </div> */}
 
-                  <div className="mt-6 flex justify-end space-x-3">
+                  <div className="flex justify-end space-x-3 pt-6">
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md border border-gray-300 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-300 shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-slate-800"
+                      className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-[#27272a] bg-transparent hover:bg-[#27272a] h-10 px-4 py-2"
                       onClick={() => setIsOpen(false)}
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-700 px-4 py-2 text-sm font-medium text-yellow-400 shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-slate-800"
+                      className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-[#fafafa] text-[#09090b] hover:bg-[#fafafa]/90 h-10 px-4 py-2"
                     >
                       Save Changes
                     </button>
@@ -521,7 +509,6 @@ function EditTodoModal({
   );
 }
 
-// Delete Confirmation Modal Component
 function DeleteConfirmationModal({
   isOpen,
   setIsOpen,
@@ -533,7 +520,7 @@ function DeleteConfirmationModal({
 }) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-20" onClose={() => setIsOpen(false)}>
+      <Dialog as="div" className="relative z-[60]" onClose={() => setIsOpen(false)}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -543,7 +530,7 @@ function DeleteConfirmationModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
@@ -557,39 +544,37 @@ function DeleteConfirmationModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-slate-800 p-6 text-left align-middle shadow-xl transition-all border border-slate-700">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-900/30">
-                    <ExclamationTriangleIcon className="h-6 w-6 text-red-400" aria-hidden="true" />
+              <Dialog.Panel className="w-full max-w-md bg-[#09090b] rounded-xl p-8 border border-[#27272a] shadow-2xl text-left">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-500/10">
+                    <ExclamationTriangleIcon className="h-6 w-6 text-red-500" aria-hidden="true" />
                   </div>
-                  <Dialog.Title
-                    as="h3"
-                    className="text-lg font-medium leading-6 text-yellow-400"
-                  >
-                    Delete Todo
-                  </Dialog.Title>
+                  <div>
+                    <Dialog.Title as="h3" className="text-xl font-semibold text-[#fafafa]">
+                      Delete Project
+                    </Dialog.Title>
+                    <p className="text-sm text-[#a1a1aa] mt-1">This action cannot be undone.</p>
+                  </div>
                 </div>
                 
-                <div className="mt-3">
-                  <p className="text-sm text-slate-400">
-                    Are you sure you want to delete this todo? This action cannot be undone.
-                  </p>
-                </div>
+                <p className="text-sm text-[#a1a1aa] mb-8">
+                  Are you sure you want to delete this project? All items inside will be permanently removed.
+                </p>
 
-                <div className="mt-6 flex justify-end space-x-3">
+                <div className="flex justify-end space-x-3">
                   <button
                     type="button"
-                    className="inline-flex justify-center rounded-md border border-slate-600 bg-slate-700 px-4 py-2 text-sm font-medium text-slate-300 shadow-sm hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-slate-800"
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-[#27272a] bg-transparent hover:bg-[#27272a] h-10 px-4 py-2"
                     onClick={() => setIsOpen(false)}
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-red-800 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-slate-800"
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-red-500 text-white hover:bg-red-600 h-10 px-4 py-2 transition-colors"
                     onClick={onConfirm}
                   >
-                    Delete
+                    Delete Project
                   </button>
                 </div>
               </Dialog.Panel>
@@ -600,3 +585,4 @@ function DeleteConfirmationModal({
     </Transition>
   );
 }
+

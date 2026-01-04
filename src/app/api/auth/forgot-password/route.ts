@@ -3,13 +3,23 @@ import crypto from 'crypto';
 import connectDB from '@/lib/db';
 import { User } from '@/lib/models';
 import { sendPasswordResetEmail } from '@/lib/email';
+import { verifyTurnstileToken } from '@/lib/turnstile';
 
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
     
-    const { email } = await request.json();
+    const { email, turnstileToken } = await request.json();
     
+    // Verify Turnstile
+    const verification = await verifyTurnstileToken(turnstileToken);
+    if (!verification.success) {
+      return NextResponse.json(
+        { error: 'Bot detection failed. Please try again.' },
+        { status: 400 }
+      );
+    }
+
     if (!email) {
       return NextResponse.json(
         { error: 'Email is required' },

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import connectDB from '@/lib/db';
 import { Todo } from '@/lib/models';
 import { authOptions } from '@/lib/auth';
+import { encrypt, decrypt } from '@/lib/encryption';
 
 // GET a single todo by ID
 export async function GET(
@@ -25,11 +26,12 @@ export async function GET(
       return NextResponse.json({ error: 'Todo not found' }, { status: 404 });
     }
     
-    // Ensure all items have targetDate and status fields with defaults
+    // Ensure all items have targetDate and status fields with defaults, and decrypt values
     const processedTodo = {
       ...todo.toObject(),
       items: todo.items.map((item: any) => ({
         ...item.toObject(),
+        value: decrypt(item.value || ''),
         targetDate: item.targetDate || undefined,
         status: item.status || 'ETS'
       }))
@@ -58,10 +60,16 @@ export async function PUT(
     const data = await request.json();
 
     if (data.items) {
-      console.log('Processing items:', JSON.stringify(data.items, null, 2));
       data.items = data.items.map((item: any) => {
-        if (item._id && item._id.startsWith('temp_')) {
-          const { _id, ...itemWithoutId } = item;
+        const processedItem = { ...item };
+        
+        // Encrypt value
+        if (processedItem.value !== undefined) {
+          processedItem.value = encrypt(processedItem.value || '');
+        }
+
+        if (processedItem._id && processedItem._id.startsWith('temp_')) {
+          const { _id, ...itemWithoutId } = processedItem;
           // Ensure createdAt is set for new items
           if (!itemWithoutId.createdAt) {
             itemWithoutId.createdAt = new Date().toISOString();
@@ -74,19 +82,17 @@ export async function PUT(
           if (!itemWithoutId.status) {
             itemWithoutId.status = 'ETS';
           }
-          console.log('Processed new item:', JSON.stringify(itemWithoutId, null, 2));
           return itemWithoutId;
         } else {
           // For existing items, ensure targetDate is properly formatted
-          if (item.targetDate) {
-            item.targetDate = new Date(item.targetDate);
+          if (processedItem.targetDate) {
+            processedItem.targetDate = new Date(processedItem.targetDate);
           }
           // Ensure status is properly set for existing items
-          if (!item.status) {
-            item.status = 'ETS';
+          if (!processedItem.status) {
+            processedItem.status = 'ETS';
           }
-          console.log('Processed existing item:', JSON.stringify(item, null, 2));
-          return item;
+          return processedItem;
         }
       });
     }
@@ -102,8 +108,18 @@ export async function PUT(
       return NextResponse.json({ error: 'Todo not found' }, { status: 404 });
     }
     
-    return NextResponse.json(todo);
+    // Decrypt before returning
+    const responseTodo = {
+      ...todo.toObject(),
+      items: todo.items.map((item: any) => ({
+        ...item.toObject(),
+        value: decrypt(item.value || '')
+      }))
+    };
+
+    return NextResponse.json(responseTodo);
   } catch (error) {
+    console.error('Update todo error:', error);
     return NextResponse.json({ error: 'Failed to update todo' }, { status: 500 });
   }
 }

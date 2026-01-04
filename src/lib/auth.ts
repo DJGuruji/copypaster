@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "./db";
 import { User } from "./models";
+import { verifyTurnstileToken } from "./turnstile";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -9,11 +10,18 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
+        turnstileToken: { label: "Turnstile Token", type: "text" }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           return null;
+        }
+
+        // Verify Turnstile
+        const verification = await verifyTurnstileToken(credentials.turnstileToken || '');
+        if (!verification.success) {
+          throw new Error('Bot detection failed. Please try again.');
         }
 
         try {
@@ -39,8 +47,11 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             email: user.email,
           };
-        } catch (error) {
+        } catch (error: any) {
           console.error("Authentication error:", error);
+          if (error.message === 'Bot detection failed. Please try again.') {
+            throw error;
+          }
           return null;
         }
       }

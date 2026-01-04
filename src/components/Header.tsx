@@ -21,7 +21,6 @@ export default function Header() {
   const [isMobile, setIsMobile] = useState(false);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
 
-  // Detect mobile screen size
   useEffect(() => {
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -33,7 +32,6 @@ export default function Header() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  // Listen for sidebar state changes from the main page
   useEffect(() => {
     const handleSidebarToggle = (event: CustomEvent) => {
       setIsSidePanelOpen(event.detail.isOpen);
@@ -50,13 +48,11 @@ export default function Header() {
     const newState = true;
     setIsSidePanelOpen(newState);
     
-    // Dispatch custom event to notify main page
     window.dispatchEvent(new CustomEvent('openSidebar', { 
       detail: { isOpen: newState } 
     }));
   };
 
-  // Only show sidebar toggle on the main page
   const isMainPage = pathname === '/';
 
   const toggleDropdown = () => {
@@ -82,20 +78,17 @@ export default function Header() {
 
     try {
       setIsLoading(true);
-      console.log('Attempting to change password...');
-      const response = await axios.post('/api/auth/change-password', {
+      await axios.post('/api/auth/change-password', {
         currentPassword,
         newPassword
       });
       
-      console.log('Password change response:', response.data);
       toast.success('Password changed successfully');
       setIsPasswordModalOpen(false);
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error: any) {
-      console.error('Password change error:', error.response?.data || error);
       const errorMessage = error.response?.data?.error || 'Failed to change password';
       toast.error(errorMessage);
     } finally {
@@ -105,24 +98,23 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-black shadow-md border-b border-gray-300">
+      <header className="bg-[#09090b] border-b border-[#27272a] sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              {/* Mobile sidebar toggle */}
               {isMainPage && isMobile && !isSidePanelOpen && (
                 <button
                   onClick={handleSidebarToggle}
-                  className="p-2 rounded-md bg-slate-700 text-yellow-400 hover:bg-slate-600 transition-colors duration-200"
+                  className="p-2 rounded-md bg-[#27272a] text-[#fafafa] hover:bg-[#27272a]/80 transition-colors"
                   aria-label="Open sidebar"
                 >
-                  <Bars3Icon className="h-6 w-6" />
+                  <Bars3Icon className="h-5 w-5" />
                 </button>
               )}
               <div className="flex-shrink-0">
-                <Link href="/" className="text-xl font-bold text-white">
-                  <span className="bg-gradient-to-r from-pink-500 to-green-300 bg-clip-text text-transparent">
-                   CopyPaster
+                <Link href="/" className="text-xl font-bold tracking-tighter">
+                  <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">
+                   CopyCat
                   </span>
                 </Link>
               </div>
@@ -133,30 +125,30 @@ export default function Header() {
                 <div className="relative">
                   <button
                     onClick={toggleDropdown}
-                    className="flex items-center space-x-2 bg-black py-2 px-3 rounded-md hover:bg-slate-900 transition-colors duration-200"
+                    className="flex items-center space-x-2 bg-transparent py-2 px-3 rounded-md hover:bg-[#27272a] transition-colors"
                   >
-                    <UserIcon className="h-5 w-5 text-white " />
-                    <span className="text-sm text-white">{session.user.name}</span>
+                    <UserIcon className="h-4 w-4 text-[#fafafa]" />
+                    <span className="text-sm font-medium text-[#fafafa]">{session.user.name}</span>
                   </button>
                   
                   {isDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-black rounded-md shadow-lg py-1 z-10 border border-gray-200">
-                      <div className="px-4 py-2 text-sm text-yellow-400 border-b border-slate-600">
-                        Signed in as <span className="font-medium">{session.user.email}</span>
+                    <div className="absolute right-0 mt-2 w-56 bg-[#09090b] rounded-xl shadow-2xl py-2 z-50 border border-[#27272a]">
+                      <div className="px-4 py-2 text-xs text-[#a1a1aa] border-b border-[#27272a] mb-1">
+                        Signed in as <span className="text-[#fafafa] font-medium">{session.user.email}</span>
                       </div>
                       <button
                         onClick={() => {
                           setIsPasswordModalOpen(true);
                           setIsDropdownOpen(false);
                         }}
-                        className="flex w-full items-center px-4 py-2 text-sm text-slate-300 hover:bg-slate-600 hover:text-yellow-400"
+                        className="flex w-full items-center px-4 py-2 text-sm text-[#fafafa] hover:bg-[#27272a] transition-colors"
                       >
-                        <KeyIcon className="h-4 w-4 mr-2" />
+                        <KeyIcon className="h-4 w-4 mr-2 text-[#a1a1aa]" />
                         Change Password
                       </button>
                       <button
                         onClick={handleSignOut}
-                        className="flex w-full items-center px-4 py-2 text-sm text-red-400 font-bold hover:bg-slate-600 hover:text-yellow-400"
+                        className="flex w-full items-center px-4 py-2 text-sm text-red-500 hover:bg-[#27272a] transition-colors"
                       >
                         <ArrowRightOnRectangleIcon className="h-4 w-4 mr-2" />
                         Sign out
@@ -165,16 +157,16 @@ export default function Header() {
                   )}
                 </div>
               ) : (
-                <div className="flex space-x-4">
+                <div className="flex space-x-2">
                   <Link
                     href="/auth/signin"
-                    className="text-slate-300 hover:text-yellow-400 px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-sm font-medium text-[#a1a1aa] hover:text-[#fafafa] px-3 py-2 rounded-md transition-colors"
                   >
                     Sign In
                   </Link>
                   <Link
                     href="/auth/register"
-                    className="bg-blue-700 text-yellow-400 px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-600"
+                    className="bg-gradient-to-r from-yellow-400 to-amber-500 text-[#09090b] text-sm font-bold px-4 py-2 rounded-md hover:opacity-90 transition-all shadow-[0_0_15px_rgba(251,191,36,0.3)]"
                   >
                     Register
                   </Link>
@@ -185,68 +177,72 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Password Change Modal */}
       <Dialog
         open={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
         className="fixed z-50 inset-0 overflow-y-auto"
       >
         <div className="flex items-center justify-center min-h-screen p-4">
-          <div className="fixed inset-0 bg-black backdrop-blur-sm" aria-hidden="true" />
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" aria-hidden="true" />
 
-          <div className="relative bg-black rounded-2xl w-full max-w-md mx-4 p-6 shadow-2xl border border-gray-300">
-            <h3 className="text-lg font-medium mb-4 text-center bg-gradient-to-r from-yellow-400 to-yellow-300 bg-clip-text text-transparent">
-              Change Password
-            </h3>
+          <div className="relative bg-[#09090b] rounded-xl w-full max-w-md mx-4 p-8 shadow-2xl border border-[#27272a]">
+            <div className="space-y-2 text-center mb-6">
+              <h3 className="text-2xl font-semibold tracking-tight text-[#fafafa]">
+                Change Password
+              </h3>
+              <p className="text-sm text-[#a1a1aa]">Ensure your account is using a secure password</p>
+            </div>
+            
             <form onSubmit={handleChangePassword} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-yellow-400">
+              <div className="space-y-2">
+                <label className="text-sm font-medium leading-none text-[#fafafa]">
                   Current Password
                 </label>
                 <input
                   type="password"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="mt-1 p-2 block w-full rounded-md border-slate-600 bg-slate-700 shadow-sm focus:border-yellow-400 focus:ring-yellow-400 text-slate-200 transition-all duration-300"
+                  className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fafafa] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-yellow-400">
+              <div className="space-y-2">
+                <label className="text-sm font-medium leading-none text-[#fafafa]">
                   New Password
                 </label>
                 <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="mt-1 p-2 block w-full rounded-md border-slate-600 bg-slate-700 shadow-sm focus:border-yellow-400 focus:ring-yellow-400 text-slate-200 transition-all duration-300"
+                  className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fafafa] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-yellow-400">
+              <div className="space-y-2">
+                <label className="text-sm font-medium leading-none text-[#fafafa]">
                   Confirm New Password
                 </label>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="mt-1 p-2 block w-full rounded-md border-slate-600 bg-slate-700 shadow-sm focus:border-yellow-400 focus:ring-yellow-400 text-slate-200 transition-all duration-300"
+                  className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fafafa] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   required
                 />
               </div>
-              <div className="flex justify-end space-x-3 pt-4">
+              
+              <div className="flex justify-end space-x-3 pt-6">
                 <button
                   type="button"
                   onClick={() => setIsPasswordModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-700 rounded-md hover:bg-slate-600 transition-colors duration-300 border border-slate-600"
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fafafa] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-[#27272a] bg-transparent hover:bg-[#27272a] h-10 px-4 py-2"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="px-4 py-2 text-sm font-medium text-yellow-400 bg-gradient-to-r from-blue-700 to-indigo-800 rounded-md hover:from-blue-800 hover:to-indigo-900 transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fafafa] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#fafafa] text-[#09090b] hover:bg-[#fafafa]/90 h-10 px-4 py-2"
                 >
                   {isLoading ? 'Changing...' : 'Change Password'}
                 </button>
@@ -257,4 +253,5 @@ export default function Header() {
       </Dialog>
     </>
   );
-} 
+}
+ 

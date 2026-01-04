@@ -54,7 +54,6 @@ function ResetPasswordForm() {
       
       setMessage(response.data.message);
       
-      // Redirect to sign in after 3 seconds
       setTimeout(() => {
         router.push('/auth/signin');
       }, 3000);
@@ -65,82 +64,84 @@ function ResetPasswordForm() {
     }
   };
 
-  if (!token && !error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-black to-slate-900 p-4">
-        <div className="w-full max-w-md rounded-2xl bg-slate-800 p-8 shadow-xl border border-slate-700">
-          <div className="text-center text-slate-300">Loading...</div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-black to-slate-900 p-4">
-      <div className="w-full max-w-md rounded-2xl bg-slate-800 p-8 shadow-xl border border-slate-700">
-        <h1 className="mb-6 text-center text-2xl font-bold text-yellow-400">Reset Password</h1>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#09090b] text-[#fafafa] p-4">
+      <div className="mb-8 flex flex-col items-center">
+        <Link href="/" className="text-3xl font-bold tracking-tighter">
+          <span className="bg-gradient-to-r from-pink-500 to-green-300 bg-clip-text text-transparent">
+            CopyCat
+          </span>
+        </Link>
+        <p className="mt-2 text-sm text-[#a1a1aa]">Create a new password</p>
+      </div>
+
+      <div className="w-full max-w-[400px] space-y-6 rounded-xl border border-[#27272a] bg-[#09090b] p-8 shadow-2xl">
+        <div className="space-y-2 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight">Reset Password</h1>
+          <p className="text-sm text-[#a1a1aa]">
+            Enter your new password below
+          </p>
+        </div>
         
         {message && (
-          <div className="mb-4 rounded-md bg-green-900/30 p-3 text-green-300">
+          <div className="rounded-md bg-green-500/10 border border-green-500/20 p-3 text-sm text-green-500 text-center">
             {message}
-            <div className="mt-2 text-sm">Redirecting to sign in...</div>
+            <div className="mt-2 text-xs opacity-70">Redirecting to sign in...</div>
           </div>
         )}
         
         {error && (
-          <div className="mb-4 rounded-md bg-red-900/30 p-3 text-red-300">
+          <div className="rounded-md bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-500 text-center">
             {error}
           </div>
         )}
         
         {token && !message && (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-yellow-300">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium leading-none">
                 New Password
               </label>
               <input
                 id="password"
                 type="password"
-                placeholder="Enter new password"
+                placeholder='••••••••'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 p-2 block w-full rounded-md border-slate-600 bg-slate-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-slate-200"
+                className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fafafa] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 required
                 minLength={6}
               />
             </div>
             
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-yellow-300">
+            <div className="space-y-2">
+              <label htmlFor="confirmPassword" className="text-sm font-medium leading-none">
                 Confirm New Password
               </label>
               <input
                 id="confirmPassword"
                 type="password"
-                placeholder="Confirm new password"
+                placeholder='••••••••'
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="mt-1 p-2 block w-full rounded-md border-slate-600 bg-slate-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-slate-200"
+                className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fafafa] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 required
                 minLength={6}
               />
             </div>
             
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-md bg-blue-700 py-2 px-4 text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:opacity-70"
-              >
-                {loading ? 'Resetting...' : 'Reset Password'}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fafafa] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#fafafa] text-[#09090b] hover:bg-[#fafafa]/90 h-10 px-4 py-2 w-full mt-2"
+            >
+              {loading ? 'Resetting...' : 'Reset Password'}
+            </button>
           </form>
         )}
         
-        <div className="mt-6 text-center text-sm text-slate-400">
-          <Link href="/auth/signin" className="text-blue-400 hover:text-blue-300">
+        <div className="text-center text-sm text-[#a1a1aa]">
+          <Link href="/auth/signin" className="text-[#fafafa] hover:underline underline-offset-4">
             Back to Sign In
           </Link>
         </div>
@@ -152,9 +153,9 @@ function ResetPasswordForm() {
 export default function ResetPassword() {
   return (
     <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-black to-slate-900 p-4">
-        <div className="w-full max-w-md rounded-2xl bg-slate-800 p-8 shadow-xl border border-slate-700">
-          <div className="text-center text-slate-300">Loading...</div>
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#09090b] text-[#fafafa] p-4">
+        <div className="w-full max-w-[400px] rounded-xl border border-[#27272a] bg-[#09090b] p-8 shadow-2xl">
+          <div className="text-center text-[#a1a1aa]">Loading...</div>
         </div>
       </div>
     }>

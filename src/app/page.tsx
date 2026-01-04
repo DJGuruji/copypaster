@@ -189,24 +189,24 @@ export default function Home() {
         {selectedTodo ? (
           <TodoDetail todo={selectedTodo} onUpdateTodo={handleUpdateTodo} />
         ) : (
-          <div className="flex flex-col items-center justify-center h-full text-slate-400 p-8">
+          <div className="flex flex-col items-center justify-center h-full text-[#a1a1aa] p-8">
             <div 
-              className="max-w-md text-center p-8 rounded-xl bg-slate-800/80 backdrop-blur-sm shadow-xl border border-slate-700"
+              className="max-w-md text-center p-12 rounded-2xl bg-[#09090b] shadow-2xl border border-[#27272a]"
               data-aos="zoom-in"
               data-aos-delay="400"
             >
-              <img 
-                src="/window.svg" 
-                alt="Todo" 
-                className="w-24 h-24 mx-auto mb-6 opacity-60 invert"
-                data-aos="flip-up"
-                data-aos-delay="600"
-              />
-              <h2 className="text-xl font-medium text-yellow-400 mb-2">No Todo Selected</h2>
-              <p className="text-slate-400">
+              <div className="w-20 h-20 mx-auto mb-8 flex items-center justify-center rounded-full bg-[#18181b] border border-[#27272a]">
+                <img 
+                  src="/window.svg" 
+                  alt="Todo" 
+                  className="w-10 h-10 opacity-40 invert"
+                />
+              </div>
+              <h2 className="text-2xl font-bold tracking-tight text-[#fafafa] mb-3">No Project Selected</h2>
+              <p className="text-sm leading-relaxed text-[#52525b]">
                 {todos.length > 0 
-                  ? 'Select a todo from the sidebar or create a new one to get started'
-                  : 'Create your first todo to get started'}
+                  ? 'Select a project from the sidebar or create a new one to begin managing your tasks.'
+                  : 'Start by creating your first project from the sidebar to organize your workflow.'}
               </p>
             </div>
           </div>
@@ -215,11 +215,8 @@ export default function Home() {
       <Toaster 
         position="bottom-right" 
         toastOptions={{
-          style: {
-            background: '#1e293b',
-            color: '#f1f5f9',
-            borderColor: '#334155'
-          }
+          className: '!bg-[#18181b] !text-[#fafafa] !border !border-[#27272a] !rounded-lg !text-sm',
+          duration: 3000,
         }}
       />
     </div>

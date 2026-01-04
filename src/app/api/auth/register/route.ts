@@ -1,13 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import { User } from '@/lib/models';
+import { verifyTurnstileToken } from '@/lib/turnstile';
 
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
     
-    const { name, email, password } = await request.json();
+    const { name, email, password, turnstileToken } = await request.json();
     
+    // Verify Turnstile
+    const verification = await verifyTurnstileToken(turnstileToken);
+    if (!verification.success) {
+      return NextResponse.json(
+        { error: 'Bot detection failed. Please try again.' },
+        { status: 400 }
+      );
+    }
+
     // Check if user already exists
     const userExists = await User.findOne({ email });
     

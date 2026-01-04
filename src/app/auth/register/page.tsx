@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function Register() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,19 +33,23 @@ export default function Register() {
       setError('Password should be at least 6 characters');
       return;
     }
+
+    if (!turnstileToken) {
+      setError('Please complete the security check');
+      return;
+    }
     
     try {
       setLoading(true);
       setError('');
       
-      // Register the user
       await axios.post('/api/auth/register', {
         name,
         email,
         password,
+        turnstileToken,
       });
       
-      // Redirect to sign in page after successful registration
       router.push('/auth/signin?registered=true');
     } catch (error: any) {
       const errorMessage = error.response?.data?.error || 'Registration failed';
@@ -55,95 +61,116 @@ export default function Register() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-black to-slate-900 p-4">
-      <div className="w-full max-w-md rounded-2xl bg-slate-800 p-8 shadow-xl border border-slate-700">
-        <h1 className="mb-6 text-center text-2xl font-bold text-yellow-400">Register</h1>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#09090b] text-[#fafafa] p-4">
+      <div className="mb-8 flex flex-col items-center">
+        <Link href="/" className="text-3xl font-bold tracking-tighter">
+          <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">
+            CopyCat
+          </span>
+        </Link>
+        <p className="mt-2 text-sm text-[#a1a1aa]">Create an account to get started</p>
+      </div>
+
+      <div className="w-full max-w-[400px] space-y-6 rounded-2xl border border-[#27272a] bg-[#09090b] p-8 shadow-2xl">
+        <div className="space-y-2 text-center">
+          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Create an account</h1>
+          <p className="text-sm text-[#a1a1aa]">
+            Enter your details below to create your account
+          </p>
+        </div>
         
         {error && (
-          <div className="mb-4 rounded-md bg-red-900/30 p-3 text-red-300">
+          <div className="rounded-md bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-500 text-center">
             {error}
           </div>
         )}
         
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-yellow-300">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="name" className="text-sm font-medium leading-none text-[#fafafa]">
               Name
             </label>
             <input
               id="name"
               type="text"
-              placeholder='Your Name'
+              placeholder='John Doe'
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 p-2 block w-full rounded-md border-slate-600 bg-slate-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-slate-200"
+              className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-yellow-500/50 transition-all disabled:cursor-not-allowed disabled:opacity-50"
               required
             />
           </div>
           
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-yellow-300">
+          <div className="space-y-2">
+            <label htmlFor="email" className="text-sm font-medium leading-none text-[#fafafa]">
               Email
             </label>
             <input
               id="email"
               type="email"
-              placeholder='Your Email'
+              placeholder='name@example.com'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 p-2 block w-full rounded-md border-slate-600 bg-slate-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-slate-200"
+              className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-yellow-500/50 transition-all disabled:cursor-not-allowed disabled:opacity-50"
               required
             />
           </div>
           
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-yellow-300">
+          <div className="space-y-2">
+            <label htmlFor="password" className="text-sm font-medium leading-none text-[#fafafa]">
               Password
             </label>
             <input
               id="password"
               type="password"
-              placeholder='Password'
+              placeholder='••••••••'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 p-2 block w-full rounded-md border-slate-600 bg-slate-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-slate-200"
+              className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-yellow-500/50 transition-all disabled:cursor-not-allowed disabled:opacity-50"
               required
             />
           </div>
           
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-yellow-300">
+          <div className="space-y-2">
+            <label htmlFor="confirmPassword" className="text-sm font-medium leading-none text-[#fafafa]">
               Confirm Password
             </label>
             <input
               id="confirmPassword"
               type="password"
-              placeholder='confirm password'
+              placeholder='••••••••'
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="mt-1 p-2 block w-full rounded-md border-slate-600 bg-slate-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-slate-200"
+              className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-yellow-500/50 transition-all disabled:cursor-not-allowed disabled:opacity-50"
               required
             />
           </div>
-          
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-md bg-blue-700 py-2 px-4 text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:opacity-70"
-            >
-              {loading ? 'Registering...' : 'Register'}
-            </button>
+
+          <div className="flex justify-center pt-2">
+            <Turnstile
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
+              onSuccess={(token) => setTurnstileToken(token)}
+              options={{ theme: 'dark' }}
+            />
           </div>
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className="inline-flex items-center justify-center rounded-md text-sm font-bold bg-gradient-to-r from-yellow-400 to-amber-500 text-[#09090b] hover:opacity-90 transition-all shadow-[0_0_15px_rgba(251,191,36,0.3)] h-10 px-4 py-2 w-full mt-2"
+          >
+            {loading ? 'Creating account...' : 'Create Account'}
+          </button>
         </form>
         
-        <div className="mt-6 text-center text-sm text-slate-400">
+        <div className="text-center text-sm text-[#a1a1aa]">
           Already have an account?{' '}
-          <Link href="/auth/signin" className="text-blue-400 hover:text-blue-300">
+          <Link href="/auth/signin" className="text-[#fafafa] hover:text-yellow-400 transition-colors hover:underline underline-offset-4">
             Sign In
           </Link>
         </div>
       </div>
     </div>
   );
-} 
+}
+ 
