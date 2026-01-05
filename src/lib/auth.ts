@@ -27,11 +27,16 @@ export const authOptions: NextAuthOptions = {
         try {
           await connectDB();
           
-          // Find user by email and include password for comparison
-          const user = await User.findOne({ email: credentials.email }).select("+password");
+          // Find user by email and include password and isVerified for comparison
+          const user = await User.findOne({ email: credentials.email }).select("+password +isVerified");
           
           if (!user) {
             return null;
+          }
+
+          // Check if user is verified
+          if (user.isVerified === false) {
+            throw new Error('Please verify your email before signing in.');
           }
 
           // Check if password matches
@@ -49,10 +54,7 @@ export const authOptions: NextAuthOptions = {
           };
         } catch (error: any) {
           console.error("Authentication error:", error);
-          if (error.message === 'Bot detection failed. Please try again.') {
-            throw error;
-          }
-          return null;
+          throw error;
         }
       }
     })

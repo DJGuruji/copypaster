@@ -29,17 +29,29 @@ export async function POST(request: NextRequest) {
     }
     
     // Create user
+    const crypto = await import('crypto');
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    
     const user = await User.create({
       name,
       email,
       password,
+      verificationToken,
+      verificationTokenExpiry,
+      isVerified: false,
     });
+
+    // Send verification email
+    const { sendVerificationEmail } = await import('@/lib/email');
+    await sendVerificationEmail(user.email, verificationToken, user.name);
     
     // Return user without password
     return NextResponse.json({
       id: user._id.toString(),
       name: user.name,
       email: user.email,
+      message: 'Verification email sent. Please check your inbox.',
     });
   } catch (error: any) {
     console.error('Registration error:', error);
