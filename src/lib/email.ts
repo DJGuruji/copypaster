@@ -55,7 +55,7 @@ export const sendPasswordResetEmail = async (email: string, resetToken: string) 
               <tr>
                 <td style="padding: 40px 40px 20px 40px; text-align: center;">
                   <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.05em; line-height: 1;">
-                    <span style="color: #fafafa;">Copy</span><span style="background: linear-gradient(to right, #ec4899, #86efac); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent;">Paster</span>
+                    <span style="color: #fafafa;">Copy</span><span style="background: linear-gradient(to right, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent;">Cat</span>
                   </h1>
                 </td>
               </tr>
@@ -86,7 +86,7 @@ export const sendPasswordResetEmail = async (email: string, resetToken: string) 
                     <p style="margin: 0 0 12px 0; font-size: 13px; color: #52525b; text-align: center;">
                       If the button doesn't work, copy and paste this link:
                     </p>
-                    <p style="margin: 0; font-size: 12px; color: #3b82f6; word-break: break-all; text-align: center; text-decoration: underline;">
+                    <p style="margin: 0; font-size: 12px; color: #fbbf24; word-break: break-all; text-align: center; text-decoration: underline;">
                       ${resetUrl}
                     </p>
                   </div>
@@ -116,6 +116,87 @@ export const sendPasswordResetEmail = async (email: string, resetToken: string) 
   return sendEmail({
     to: email,
     subject: 'Reset your CopyCat password',
+    html,
+  });
+};
+
+export const sendVerificationEmail = async (email: string, token: string, name: string) => {
+  const verifyUrl = `${process.env.BASE_URL}/api/auth/verify-email?token=${token}`;
+  
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Verify Your Account</title>
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
+        <tr>
+          <td align="center" style="padding: 40px 20px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 500px; background-color: #09090b; border: 1px solid #27272a; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(251, 191, 36, 0.1);">
+              <!-- Branding Header -->
+              <tr>
+                <td style="padding: 40px 40px 10px 40px; text-align: center;">
+                  <h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.05em; line-height: 1;">
+                    <span style="background: linear-gradient(to right, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent;">CopyCat</span>
+                  </h1>
+                </td>
+              </tr>
+              
+              <!-- Content -->
+              <tr>
+                <td style="padding: 30px 40px 40px 40px;">
+                  <h2 style="margin: 0 0 16px 0; font-size: 24px; font-weight: 700; color: #fafafa; letter-spacing: -0.025em; text-align: center;">
+                    Welcome to the family, ${name}!
+                  </h2>
+                  <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 26px; color: #a1a1aa; text-align: center;">
+                    We're so excited to have you on board! Before you start pasting and organizing your projects, we just need to verify your email address.
+                  </p>
+                  
+                  <!-- Verify Button -->
+                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                      <td align="center" style="padding: 20px 0 30px 0;">
+                        <a href="${verifyUrl}" 
+                           style="background: linear-gradient(to right, #fbbf24, #f59e0b); color: #09090b; padding: 16px 40px; text-decoration: none; border-radius: 12px; font-size: 16px; font-weight: 700; display: inline-block; box-shadow: 0 10px 20px rgba(251, 191, 36, 0.2);">
+                          Verify Email Address
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                  
+                  <div style="background-color: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 20px; margin-top: 10px;">
+                    <p style="margin: 0 0 12px 0; font-size: 13px; color: #52525b; text-align: center; font-weight: 500;">
+                      Or copy this link to your browser:
+                    </p>
+                    <p style="margin: 0; font-size: 12px; color: #fbbf24; word-break: break-all; text-align: center; opacity: 0.8;">
+                      ${verifyUrl}
+                    </p>
+                  </div>
+                </td>
+              </tr>
+              
+              <!-- Footer -->
+              <tr>
+                <td style="padding: 24px; background-color: #18181b; border-top: 1px solid #27272a; text-align: center;">
+                  <p style="margin: 0; font-size: 12px; color: #52525b; font-weight: 500;">
+                    &copy; ${new Date().getFullYear()} CopyCat. Built for speed and security.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: email,
+    subject: `Verify your CopyCat account, ${name}!`,
     html,
   });
 };

@@ -68,16 +68,16 @@ function ResetPasswordForm() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#09090b] text-[#fafafa] p-4">
       <div className="mb-8 flex flex-col items-center">
         <Link href="/" className="text-3xl font-bold tracking-tighter">
-          <span className="bg-gradient-to-r from-pink-500 to-green-300 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">
             CopyCat
           </span>
         </Link>
         <p className="mt-2 text-sm text-[#a1a1aa]">Create a new password</p>
       </div>
 
-      <div className="w-full max-w-[400px] space-y-6 rounded-xl border border-[#27272a] bg-[#09090b] p-8 shadow-2xl">
+      <div className="w-full max-w-[400px] space-y-6 rounded-2xl border border-[#27272a] bg-[#09090b] p-8 shadow-2xl">
         <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">Reset Password</h1>
+          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Reset Password</h1>
           <p className="text-sm text-[#a1a1aa]">
             Enter your new password below
           </p>
@@ -99,7 +99,7 @@ function ResetPasswordForm() {
         {token && !message && (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium leading-none">
+              <label htmlFor="password" className="text-sm font-medium leading-none text-[#fafafa]">
                 New Password
               </label>
               <input
@@ -108,14 +108,14 @@ function ResetPasswordForm() {
                 placeholder='••••••••'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fafafa] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-yellow-500/50 transition-all disabled:cursor-not-allowed disabled:opacity-50"
                 required
                 minLength={6}
               />
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="text-sm font-medium leading-none">
+              <label htmlFor="confirmPassword" className="text-sm font-medium leading-none text-[#fafafa]">
                 Confirm New Password
               </label>
               <input
@@ -124,7 +124,7 @@ function ResetPasswordForm() {
                 placeholder='••••••••'
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fafafa] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-yellow-500/50 transition-all disabled:cursor-not-allowed disabled:opacity-50"
                 required
                 minLength={6}
               />
@@ -133,7 +133,7 @@ function ResetPasswordForm() {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fafafa] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#fafafa] text-[#09090b] hover:bg-[#fafafa]/90 h-10 px-4 py-2 w-full mt-2"
+              className="inline-flex items-center justify-center rounded-md text-sm font-bold bg-gradient-to-r from-yellow-400 to-amber-500 text-[#09090b] hover:opacity-90 transition-all shadow-[0_0_15px_rgba(251,191,36,0.3)] h-10 px-4 py-2 w-full mt-2"
             >
               {loading ? 'Resetting...' : 'Reset Password'}
             </button>
@@ -141,7 +141,7 @@ function ResetPasswordForm() {
         )}
         
         <div className="text-center text-sm text-[#a1a1aa]">
-          <Link href="/auth/signin" className="text-[#fafafa] hover:underline underline-offset-4">
+          <Link href="/auth/signin" className="text-[#fafafa] hover:text-yellow-400 transition-colors hover:underline underline-offset-4">
             Back to Sign In
           </Link>
         </div>

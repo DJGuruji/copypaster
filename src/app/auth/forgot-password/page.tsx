@@ -46,7 +46,7 @@ export default function ForgotPassword() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#09090b] text-[#fafafa] p-4">
       <div className="mb-8 flex flex-col items-center">
         <Link href="/" className="text-3xl font-bold tracking-tighter">
-          <span className="bg-gradient-to-r from-pink-500 to-green-300 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">
             CopyCat
           </span>
         </Link>
@@ -55,7 +55,7 @@ export default function ForgotPassword() {
 
       <div className="w-full max-w-[400px] space-y-6 rounded-2xl border border-[#27272a] bg-[#09090b] p-8 shadow-2xl">
         <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-pink-500 to-green-300 bg-clip-text text-transparent">Forgot Password</h1>
+          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Forgot Password</h1>
           <p className="text-sm text-[#a1a1aa]">
             Enter your email to receive a password reset link
           </p>
@@ -84,7 +84,7 @@ export default function ForgotPassword() {
               placeholder='name@example.com'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-pink-500/50 transition-all disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-10 w-full rounded-md border border-[#27272a] bg-transparent px-3 py-2 text-sm placeholder:text-[#52525b] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-yellow-500/50 transition-all disabled:cursor-not-allowed disabled:opacity-50"
               required
             />
           </div>
@@ -100,7 +100,7 @@ export default function ForgotPassword() {
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center justify-center rounded-md text-sm font-bold bg-gradient-to-r from-pink-500 to-green-300 text-[#09090b] hover:opacity-90 transition-all shadow-[0_0_15px_rgba(236,72,153,0.2)] h-10 px-4 py-2 w-full mt-2"
+            className="inline-flex items-center justify-center rounded-md text-sm font-bold bg-gradient-to-r from-yellow-400 to-amber-500 text-[#09090b] hover:opacity-90 transition-all shadow-[0_0_15px_rgba(251,191,36,0.3)] h-10 px-4 py-2 w-full mt-2"
           >
             {loading ? 'Sending...' : 'Send Reset Link'}
           </button>
@@ -108,7 +108,7 @@ export default function ForgotPassword() {
         
         <div className="text-center text-sm text-[#a1a1aa]">
           Remember your password?{' '}
-          <Link href="/auth/signin" className="text-[#fafafa] hover:text-pink-400 transition-colors hover:underline underline-offset-4">
+          <Link href="/auth/signin" className="text-[#fafafa] hover:text-yellow-400 transition-colors hover:underline underline-offset-4">
             Sign In
           </Link>
         </div>

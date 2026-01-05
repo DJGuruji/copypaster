@@ -1,18 +1,35 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Turnstile } from '@marsidev/react-turnstile';
+import { toast } from 'react-hot-toast';
 
-export default function SignIn() {
+function SignInForm() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const [success, setSuccess] = useState('');
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const verified = searchParams.get('verified');
+    const urlError = searchParams.get('error');
+
+    if (verified === 'true') {
+      setSuccess('Email verified successfully! You can now sign in.');
+      toast.success('Email verified successfully!');
+    }
+
+    if (urlError) {
+      setError(urlError);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +56,11 @@ export default function SignIn() {
       });
       
       if (result?.error) {
-        setError(result.error === 'CredentialsSignin' ? 'Invalid email or password' : result.error);
+        if (result.error === 'CredentialsSignin') {
+          setError('Invalid email or password');
+        } else {
+          setError(result.error);
+        }
         return;
       }
       
@@ -75,6 +96,12 @@ export default function SignIn() {
         {error && (
           <div className="rounded-md bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-500 text-center">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="rounded-md bg-green-500/10 border border-green-500/20 p-3 text-sm text-green-500 text-center">
+            {success}
           </div>
         )}
         
@@ -139,6 +166,18 @@ export default function SignIn() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignIn() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-[#09090b]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500"></div>
+      </div>
+    }>
+      <SignInForm />
+    </Suspense>
   );
 }
  
